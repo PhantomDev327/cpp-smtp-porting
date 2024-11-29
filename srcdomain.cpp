@@ -86,21 +86,21 @@ struct globs_t {
 	std::atomic<int> timeout_counter;
 
 	globs_t() :
-		processed_tasks_counter(0),
-		running_tasks_counter(0),
-		established_connections_counter(0),
-		running_connections_counter(0),
-		login_attempts_counter(0),
-		tcpandsll_errors_counter(0),
-		connect_errors_counter(0),
-		good_domains_counter(0),
-		checked_domains_counter(0),
-		domains_from_cache_counter(0),
-		dns_timeout_error_counter(0),
-		running_dns_counter(0),
-		cracked_hosts_counter(0),
-		smtp_error_counter(0),
-		timeout_counter(0)
+	processed_tasks_counter(0),
+	running_tasks_counter(0),
+	established_connections_counter(0),
+	running_connections_counter(0),
+	login_attempts_counter(0),
+	tcpandsll_errors_counter(0),
+	connect_errors_counter(0),
+	good_domains_counter(0),
+	checked_domains_counter(0),
+	domains_from_cache_counter(0),
+	dns_timeout_error_counter(0),
+	running_dns_counter(0),
+	cracked_hosts_counter(0),
+	smtp_error_counter(0),
+	timeout_counter(0)
 	{
 
 	}
@@ -156,9 +156,13 @@ class scheduler_task {
 public:
 	virtual void try_to_connect() {};
 	virtual bool try_to_complete() = 0;
-	virtual scheduler_task* get_primary_task() { return nullptr; };
+	virtual scheduler_task* get_primary_task() {
+		return nullptr;
+	};
 	virtual int get_socket() = 0;
-	virtual bool try_to_complete_by_timeout() { return true; }
+	virtual bool try_to_complete_by_timeout() {
+		return true;
+	}
 
 	virtual ~scheduler_task() {}
 };
@@ -371,7 +375,7 @@ public:
 
 
 	ssl_socket_task(const sockaddr_in* destaddr, const sockaddr_in * localaddr = nullptr) :
-		_destaddr(destaddr), _localaddr(localaddr) {
+	_destaddr(destaddr), _localaddr(localaddr) {
 
 		_sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -594,7 +598,7 @@ class socket_task : public scheduler_task {
 public:
 
 	socket_task(const sockaddr_in* destaddr, const sockaddr_in * localaddr = nullptr) :
-		_destaddr(destaddr) {
+	_destaddr(destaddr) {
 
 		_sock = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -658,36 +662,36 @@ public:
 
 namespace dns_helper {
 
-	//DNS header structure
+//DNS header structure
 	struct DNS_HEADER
 	{
-		unsigned short id; // identification number
+	unsigned short id; // identification number
 
-		unsigned char rd : 1; // recursion desired
-		unsigned char tc : 1; // truncated message
-		unsigned char aa : 1; // authoritive answer
-		unsigned char opcode : 4; // purpose of message
-		unsigned char qr : 1; // query/response flag
+	unsigned char rd : 1; // recursion desired
+	unsigned char tc : 1; // truncated message
+	unsigned char aa : 1; // authoritive answer
+	unsigned char opcode : 4; // purpose of message
+	unsigned char qr : 1; // query/response flag
 
-		unsigned char rcode : 4; // response code
-		unsigned char cd : 1; // checking disabled
-		unsigned char ad : 1; // authenticated data
-		unsigned char z : 1; // its z! reserved
-		unsigned char ra : 1; // recursion available
+	unsigned char rcode : 4; // response code
+	unsigned char cd : 1; // checking disabled
+	unsigned char ad : 1; // authenticated data
+	unsigned char z : 1; // its z! reserved
+	unsigned char ra : 1; // recursion available
 
-		unsigned short q_count; // number of question entries
-		unsigned short ans_count; // number of answer entries
-		unsigned short auth_count; // number of authority entries
-		unsigned short add_count; // number of resource entries
-	};
+	unsigned short q_count; // number of question entries
+	unsigned short ans_count; // number of answer entries
+	unsigned short auth_count; // number of authority entries
+	unsigned short add_count; // number of resource entries
+};
 
-	int build_request_A(const char *domain, unsigned char* buf);
+int build_request_A(const char *domain, unsigned char* buf);
 
-	uint32_t extract_ipaddr(unsigned char* buf, int bufsize, const char* domain);
+uint32_t extract_ipaddr(unsigned char* buf, int bufsize, const char* domain);
 
-	inline DNS_HEADER* to_header(void* ptr) {
-		return  (DNS_HEADER *)ptr;
-	}
+inline DNS_HEADER* to_header(void* ptr) {
+	return  (DNS_HEADER *)ptr;
+}
 }
 
 
@@ -843,7 +847,7 @@ class dns_task : public scheduler_task {
 public:
 
 	dns_task(int sd, const char* hn, int hostindex) :
-		_subdomain(sd), _hostname(hn), _hostindex(hostindex) {
+	_subdomain(sd), _hostname(hn), _hostindex(hostindex) {
 
 		_sock = socket(AF_INET, SOCK_DGRAM, 0);
 
@@ -978,47 +982,47 @@ extern "C" {
 #endif
 
 
-	typedef struct {
-		uint32_t qr : 1; // 0 for query, 1 for response
-		uint32_t rd : 1; // recursion desired
-		uint32_t ra : 1; // recursion available
-		uint32_t aa : 1; // authoritative answer
-		uint32_t rcode : 4; // return code
-		uint32_t dns_id : 16;//query identification
-		uint32_t qtype : 16;//query id
-		uint32_t rrtype : 16;//rr type
-		uint16_t l_domain;//length of valid data in p_domain(see below)
-		uint16_t l_value;//length of valid data in p_value(see below)
-		uint32_t ttl;//expiration time of rr data
+typedef struct {
+	uint32_t qr : 1; // 0 for query, 1 for response
+	uint32_t rd : 1; // recursion desired
+	uint32_t ra : 1; // recursion available
+	uint32_t aa : 1; // authoritative answer
+	uint32_t rcode : 4; // return code
+	uint32_t dns_id : 16;//query identification
+	uint32_t qtype : 16;//query id
+	uint32_t rrtype : 16;//rr type
+	uint16_t l_domain;//length of valid data in p_domain(see below)
+	uint16_t l_value;//length of valid data in p_value(see below)
+	uint32_t ttl;//expiration time of rr data
 #define DNS_EXTRACTOR_DOMAIN_LEN_MAX 256
-		uint8_t p_domain[DNS_EXTRACTOR_DOMAIN_LEN_MAX];//domain name
+	uint8_t p_domain[DNS_EXTRACTOR_DOMAIN_LEN_MAX];//domain name
 #define DNS_EXTRACTOR_VALUE_LEN_MAX 256
-		uint8_t p_value[DNS_EXTRACTOR_VALUE_LEN_MAX];//rr answer data
-	} __attribute__((aligned(8))) dns_access_info_t;
+	uint8_t p_value[DNS_EXTRACTOR_VALUE_LEN_MAX];//rr answer data
+} __attribute__((aligned(8))) dns_access_info_t;
 
-	typedef struct {
+typedef struct {
 #if __BYTE_ORDER == __LITTLE_ENDIAN
-		uint8_t rd : 1;
-		uint8_t tc : 1;
-		uint8_t aa : 1;
-		uint8_t opcode : 4;
-		uint8_t qr : 1;
-		uint8_t rcode : 4;
-		uint8_t zero : 3;
-		uint8_t ra : 1;
+	uint8_t rd : 1;
+	uint8_t tc : 1;
+	uint8_t aa : 1;
+	uint8_t opcode : 4;
+	uint8_t qr : 1;
+	uint8_t rcode : 4;
+	uint8_t zero : 3;
+	uint8_t ra : 1;
 #elif __BYTE_ORDER == __BIG_ENDIAN
-		uint8_t qr : 1;
-		uint8_t opcode : 4;
-		uint8_t aa : 1;
-		uint8_t tc : 1;
-		uint8_t rd : 1;
-		uint8_t ra : 1;
-		uint8_t zero : 3;
-		uint8_t rcode : 4;
+	uint8_t qr : 1;
+	uint8_t opcode : 4;
+	uint8_t aa : 1;
+	uint8_t tc : 1;
+	uint8_t rd : 1;
+	uint8_t ra : 1;
+	uint8_t zero : 3;
+	uint8_t rcode : 4;
 #else
 # error	"Please fix <bits/endian.h>"
 #endif
-	}__dns_flag_t;
+} __dns_flag_t;
 
 
 #if __BYTE_ORDER == __LITTLE_ENDIAN
@@ -1038,149 +1042,149 @@ extern "C" {
 
 #define __DNS_EXTRACTOR_EXTRACT_DOMAIN_NAME(from, to, len, maxlen, msg) {\
 		if (msg_end - from < 6/*min query section len*/) return;/*if domain name truncated*/ \
-		uint8_t domain_compressed = 0; \
-		uint8_t *p_rd = from; \
-		uint8_t *p_wr = to; \
-		while (*p_rd) { \
-			if (*p_rd >= 192) { \
-				if (!domain_compressed) { \
-					__DNS_EXTRACTOR_SKIP_N(from, 2);\
-					domain_compressed = 1; \
-				} \
-				uint16_t offset = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p_rd) - 49152; \
-				p_rd = msg;\
-				__DNS_EXTRACTOR_SKIP_N(p_rd, offset);\
-			} else { \
-				uint8_t label_len = *p_rd++; \
+uint8_t domain_compressed = 0; \
+uint8_t *p_rd = from; \
+uint8_t *p_wr = to; \
+while (*p_rd) { \
+	if (*p_rd >= 192) { \
+		if (!domain_compressed) { \
+			__DNS_EXTRACTOR_SKIP_N(from, 2);\
+		domain_compressed = 1; \
+	} \
+	uint16_t offset = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p_rd) - 49152; \
+	p_rd = msg;\
+	__DNS_EXTRACTOR_SKIP_N(p_rd, offset);\
+} else { \
+uint8_t label_len = *p_rd++; \
 				if (msg_end - p_rd < (label_len + 1)) return;/*truncated*/\
-				if (!domain_compressed) __DNS_EXTRACTOR_SKIP_N(from, label_len + 1); \
-				uint32_t left_octets_wr = maxlen - (p_wr - to); \
-				label_len = min(label_len, left_octets_wr); \
-				while (label_len-- > 0) *p_wr++ = *p_rd++; \
-				*p_wr++ = '.'; \
-			} \
-		} \
+if (!domain_compressed) __DNS_EXTRACTOR_SKIP_N(from, label_len + 1); \
+uint32_t left_octets_wr = maxlen - (p_wr - to); \
+label_len = min(label_len, left_octets_wr); \
+while (label_len-- > 0) *p_wr++ = *p_rd++; \
+*p_wr++ = '.'; \
+} \
+} \
 		if (!domain_compressed) __DNS_EXTRACTOR_SKIP_N(from, 1);/*skip last zero-length label '0'*/ \
 		if (p_wr != to) p_wr--;/*trim trailing dot as conventional*/ \
-		len = p_wr - to; \
+len = p_wr - to; \
 }
 
 
 
-	static void extract_dns_access_info(uint8_t *msg, size_t len, dns_access_info_t *access)
-	{
-		/*
-		 * DNS id, flags, answer counts : 12 bytes
-		 * minimum length of domain name: set to 2
-		 * minimum length of query section: 2+4=6
-		 * minimum length of answer section: 2+8+2+0=12
-		 * minimum query message length: 12 + 6 = 18
-		 * minimum response message length: 12 + 6 + 12 = 30
-		 * */
-		if (unlikely(!msg || len < 18)) {
-			access->dns_id = 0;
-			return;
+static void extract_dns_access_info(uint8_t *msg, size_t len, dns_access_info_t *access)
+{
+	/*
+	 * DNS id, flags, answer counts : 12 bytes
+	 * minimum length of domain name: set to 2
+	 * minimum length of query section: 2+4=6
+	 * minimum length of answer section: 2+8+2+0=12
+	 * minimum query message length: 12 + 6 = 18
+	 * minimum response message length: 12 + 6 + 12 = 30
+	 * */
+	if (unlikely(!msg || len < 18)) {
+		access->dns_id = 0;
+		return;
+	}
+
+	access->dns_id = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(msg);
+	__dns_flag_t *flags = (__dns_flag_t*)(msg + 2);
+	access->rd = flags->rd;
+	access->ra = flags->ra;
+	access->qr = flags->qr;
+	access->aa = flags->aa;
+	access->rcode = flags->rcode;
+
+	uint8_t *p = msg + 4;
+	uint16_t n_questions = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
+	p += 2;
+	uint16_t n_answers = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
+	uint8_t *msg_end = msg + len;
+
+	access->l_domain = 0;
+	access->l_value = 0;
+	p = msg + 12;
+	if (n_questions) {
+		__DNS_EXTRACTOR_EXTRACT_DOMAIN_NAME(p, access->p_domain, access->l_domain, DNS_EXTRACTOR_DOMAIN_LEN_MAX, msg);
+		access->qtype = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
+		p += 4;
+		while (n_questions-- > 1) __DNS_EXTRACTOR_SKIP_QUESTION(p);
+	}
+	else {
+		access->qtype = 0;
+		access->rrtype = 0;
+		access->ttl = 0;
+		return; //no question section
+	}
+
+	if (!n_answers) {
+		access->rrtype = 0;
+		access->ttl = 0;
+		return;
+	}
+
+	/*min domain name len: 2; min rr len:12*/
+	int answer_id;
+	int first_answer = -1;//first answer rr with rrtype == qtype
+	uint8_t *answer_start = p;
+	for (answer_id = 0; answer_id < n_answers && p - msg + 12 < len; ++answer_id) {
+		__DNS_EXTRACTOR_SKIP_DOMAIN_NAME(p);
+		uint16_t rrtype = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
+		if (rrtype == access->qtype) {
+			first_answer = answer_id;
+			break;
 		}
+		p += 8;//skip rrtype, class, ttl
+		p += __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p) + 2;
+		__DNS_EXTRACTOR_SKIP_N(p, 0);//out-of-range check
+	}
 
-		access->dns_id = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(msg);
-		__dns_flag_t *flags = (__dns_flag_t*)(msg + 2);
-		access->rd = flags->rd;
-		access->ra = flags->ra;
-		access->qr = flags->qr;
-		access->aa = flags->aa;
-		access->rcode = flags->rcode;
-
-		uint8_t *p = msg + 4;
-		uint16_t n_questions = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
-		p += 2;
-		uint16_t n_answers = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
-		uint8_t *msg_end = msg + len;
-
-		access->l_domain = 0;
-		access->l_value = 0;
-		p = msg + 12;
-		if (n_questions) {
-			__DNS_EXTRACTOR_EXTRACT_DOMAIN_NAME(p, access->p_domain, access->l_domain, DNS_EXTRACTOR_DOMAIN_LEN_MAX, msg);
-			access->qtype = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
-			p += 4;
-			while (n_questions-- > 1) __DNS_EXTRACTOR_SKIP_QUESTION(p);
-		}
-		else {
-			access->qtype = 0;
-			access->rrtype = 0;
-			access->ttl = 0;
-			return; //no question section
-		}
-
-		if (!n_answers) {
-			access->rrtype = 0;
-			access->ttl = 0;
-			return;
-		}
-
-		/*min domain name len: 2; min rr len:12*/
-		int answer_id;
-		int first_answer = -1;//first answer rr with rrtype == qtype
-		uint8_t *answer_start = p;
-		for (answer_id = 0; answer_id < n_answers && p - msg + 12 < len; ++answer_id) {
-			__DNS_EXTRACTOR_SKIP_DOMAIN_NAME(p);
-			uint16_t rrtype = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
-			if (rrtype == access->qtype) {
-				first_answer = answer_id;
-				break;
-			}
+	p = answer_start;
+	for (answer_id = 0; answer_id < n_answers && p - msg + 12 < len; ++answer_id) {
+		__DNS_EXTRACTOR_SKIP_DOMAIN_NAME(p);
+		uint16_t rrtype = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
+		if (rrtype != access->qtype && first_answer >= 0) { //skip irrelevant rr
 			p += 8;//skip rrtype, class, ttl
 			p += __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p) + 2;
-			__DNS_EXTRACTOR_SKIP_N(p, 0);//out-of-range check
+			continue;
 		}
-
-		p = answer_start;
-		for (answer_id = 0; answer_id < n_answers && p - msg + 12 < len; ++answer_id) {
-			__DNS_EXTRACTOR_SKIP_DOMAIN_NAME(p);
-			uint16_t rrtype = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
-			if (rrtype != access->qtype && first_answer >= 0) { //skip irrelevant rr
-				p += 8;//skip rrtype, class, ttl
-				p += __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p) + 2;
-				continue;
-			}
-			access->rrtype = rrtype;
-			if (answer_id == first_answer || first_answer == -1) {
-				p += 4;//skip rrtype and class
-				access->ttl = __DNS_EXTRACTOR_ASSIGH_VAR4_FROM_PKT(p);
-				p += 4;//skip ttl
-			}
-			else {
-				p += 8;
-			}
-			uint16_t rdata_len = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
-			p += 2;//skip rdata_len
-
-			uint8_t *p_value = access->p_value + access->l_value;
-			uint16_t left_octets_rd = len - (p - msg), left_octets_wr = sizeof(access->p_value) - access->l_value - 1;
-			if (answer_id != first_answer && first_answer >= 0 && left_octets_wr > 0) *p_value++ = ';';
-			rdata_len = min(rdata_len, left_octets_rd);
-
-			/*for type 2,5,6,12,15, rdata is a domain name. consider create a bitmap 0x9064*/
-			if (unlikely(rrtype == 15/*MX*/)) {
-				p += 2;//skip preference
-				uint16_t l_value;
-				__DNS_EXTRACTOR_EXTRACT_DOMAIN_NAME(p, p_value, l_value, left_octets_wr, msg);
-				p_value += l_value;
-			}
-			else if (unlikely(rrtype == 2/*NS*/ || rrtype == 12 /*PTR*/ || rrtype == 5/*CNAME*/ || rrtype == 6/*SOA*/)) {
-				uint16_t l_value;
-				__DNS_EXTRACTOR_EXTRACT_DOMAIN_NAME(p, p_value, l_value, left_octets_wr, msg);
-				p_value += l_value;
-			}
-			else {
-				rdata_len = min(rdata_len, left_octets_wr);
-				while (rdata_len-- > 0) *p_value++ = *p++;
-			}
-			access->l_value = p_value - access->p_value;
-
-			if (first_answer == -1) break;
+		access->rrtype = rrtype;
+		if (answer_id == first_answer || first_answer == -1) {
+			p += 4;//skip rrtype and class
+			access->ttl = __DNS_EXTRACTOR_ASSIGH_VAR4_FROM_PKT(p);
+			p += 4;//skip ttl
 		}
+		else {
+			p += 8;
+		}
+		uint16_t rdata_len = __DNS_EXTRACTOR_ASSIGH_VAR2_FROM_PKT(p);
+		p += 2;//skip rdata_len
+
+		uint8_t *p_value = access->p_value + access->l_value;
+		uint16_t left_octets_rd = len - (p - msg), left_octets_wr = sizeof(access->p_value) - access->l_value - 1;
+		if (answer_id != first_answer && first_answer >= 0 && left_octets_wr > 0) *p_value++ = ';';
+		rdata_len = min(rdata_len, left_octets_rd);
+
+		/*for type 2,5,6,12,15, rdata is a domain name. consider create a bitmap 0x9064*/
+		if (unlikely(rrtype == 15/*MX*/)) {
+			p += 2;//skip preference
+			uint16_t l_value;
+			__DNS_EXTRACTOR_EXTRACT_DOMAIN_NAME(p, p_value, l_value, left_octets_wr, msg);
+			p_value += l_value;
+		}
+		else if (unlikely(rrtype == 2/*NS*/ || rrtype == 12 /*PTR*/ || rrtype == 5/*CNAME*/ || rrtype == 6/*SOA*/)) {
+		uint16_t l_value;
+		__DNS_EXTRACTOR_EXTRACT_DOMAIN_NAME(p, p_value, l_value, left_octets_wr, msg);
+		p_value += l_value;
 	}
+	else {
+		rdata_len = min(rdata_len, left_octets_wr);
+		while (rdata_len-- > 0) *p_value++ = *p++;
+	}
+	access->l_value = p_value - access->p_value;
+
+	if (first_answer == -1) break;
+}
+}
 
 #ifdef __cplusplus
 }
@@ -1191,26 +1195,28 @@ extern "C" {
 
 
 namespace dns_helper {
-	//Types of DNS resource records :)
+//Types of DNS resource records :)
 
 #define T_A 1 //Ipv4 address
 #define T_NS 2 //Nameserver
 #define T_CNAME 5 // canonical name
-#define T_SOA 6 /* start of authority zone */
-#define T_PTR 12 /* domain name pointer */
+#define T_SOA 6
+/* start of authority zone */
+#define T_PTR 12
+/* domain name pointer */
 #define T_MX 15 //Mail server
 
 //Function Prototypes
 	void ChangetoDnsNameFormat(unsigned char*, unsigned char*);
 
-	//Constant sized fields of query structure
+//Constant sized fields of query structure
 	struct QUESTION
 	{
 		unsigned short qtype;
 		unsigned short qclass;
 	};
 
-	//Constant sized fields of the resource record structure
+//Constant sized fields of the resource record structure
 #pragma pack(push, 1)
 	struct R_DATA
 	{
@@ -1221,7 +1227,7 @@ namespace dns_helper {
 	};
 #pragma pack(pop)
 
-	//Pointers to resource record contents
+//Pointers to resource record contents
 	struct RES_RECORD
 	{
 		unsigned char *name;
@@ -1229,14 +1235,14 @@ namespace dns_helper {
 		unsigned char *rdata;
 	};
 
-	//Structure of a Query
+//Structure of a Query
 	typedef struct
 	{
 		unsigned char *name;
 		struct QUESTION *ques;
 	} QUERY;
 
-	// 65536
+// 65536
 	int build_request_A(const char *domain, unsigned char* buf) {
 		unsigned char hostname[100];
 		unsigned char *qname, *reader;
@@ -1246,103 +1252,103 @@ namespace dns_helper {
 
 		struct sockaddr_in a;
 
-		struct RES_RECORD answers[20], auth[20], addit[20]; //the replies from the DNS server
+	struct RES_RECORD answers[20], auth[20], addit[20]; //the replies from the DNS server
 
-		struct DNS_HEADER *dns = NULL;
-		struct QUESTION *qinfo = NULL;
+	struct DNS_HEADER *dns = NULL;
+	struct QUESTION *qinfo = NULL;
 
-		//Set the DNS structure to standard queries
-		dns = (struct DNS_HEADER *)buf;
+	//Set the DNS structure to standard queries
+	dns = (struct DNS_HEADER *)buf;
 
-		dns->id = (unsigned short)htons(rand());
-		dns->qr = 0; //This is a query
-		dns->opcode = 0; //This is a standard query
-		dns->aa = 0; //Not Authoritative
-		dns->tc = 0; //This message is not truncated
-		dns->rd = 1; //Recursion Desired
-		dns->ra = 0; //Recursion not available! hey we dont have it (lol)
-		dns->z = 0;
-		dns->ad = 0;
-		dns->cd = 0;
-		dns->rcode = 0;
-		dns->q_count = htons(1); //we have only 1 question
-		dns->ans_count = 0;
-		dns->auth_count = 0;
-		dns->add_count = 0;
+	dns->id = (unsigned short)htons(rand());
+	dns->qr = 0; //This is a query
+	dns->opcode = 0; //This is a standard query
+	dns->aa = 0; //Not Authoritative
+	dns->tc = 0; //This message is not truncated
+	dns->rd = 1; //Recursion Desired
+	dns->ra = 0; //Recursion not available! hey we dont have it (lol)
+	dns->z = 0;
+	dns->ad = 0;
+	dns->cd = 0;
+	dns->rcode = 0;
+	dns->q_count = htons(1); //we have only 1 question
+	dns->ans_count = 0;
+	dns->auth_count = 0;
+	dns->add_count = 0;
 
-		unsigned char* pos = (unsigned char*)&buf[sizeof(struct DNS_HEADER)];
+	unsigned char* pos = (unsigned char*)&buf[sizeof(struct DNS_HEADER)];
 
-		//point to the query portion
-		qname = pos;
-		ChangetoDnsNameFormat(qname, hostname);
-		qinfo = (struct QUESTION*)&pos[(strlen((const char*)qname) + 1)]; //fill it
-		qinfo->qtype = htons(T_A); //type of the query , A , MX , CNAME , NS etc
-		qinfo->qclass = htons(1); //its internet (lol)
+	//point to the query portion
+	qname = pos;
+	ChangetoDnsNameFormat(qname, hostname);
+	qinfo = (struct QUESTION*)&pos[(strlen((const char*)qname) + 1)]; //fill it
+	qinfo->qtype = htons(T_A); //type of the query , A , MX , CNAME , NS etc
+	qinfo->qclass = htons(1); //its internet (lol)
 
-		pos += (strlen((const char*)qname) + 1) + sizeof(struct QUESTION);
+	pos += (strlen((const char*)qname) + 1) + sizeof(struct QUESTION);
 
-		return pos - buf;
-	}
+	return pos - buf;
+}
 
-	uint32_t extract_ipaddr(unsigned char* buf, int bufsize, const char* domain)
-	{
-		dns_access_info_t info = { 0 };
+uint32_t extract_ipaddr(unsigned char* buf, int bufsize, const char* domain)
+{
+	dns_access_info_t info = { 0 };
 
-		extract_dns_access_info(buf, bufsize, &info);
+	extract_dns_access_info(buf, bufsize, &info);
 
-		if (info.qr &&
-			info.rrtype == T_A &&
-			info.l_value >= sizeof(uint32_t) &&
-			info.l_domain <= DNS_EXTRACTOR_DOMAIN_LEN_MAX - 10
-			) {
+	if (info.qr &&
+		info.rrtype == T_A &&
+		info.l_value >= sizeof(uint32_t) &&
+		info.l_domain <= DNS_EXTRACTOR_DOMAIN_LEN_MAX - 10
+		) {
 
-			if (!strstr((const char*)info.p_domain, domain)) {
-				//std::cout << "p_domain " << (char*)info.p_domain << std::endl;
-				//std::cout << "domain " << domain << std::endl;
-				//exit(0);
-				return 0;
-			}
-
-			uint32_t address = *(uint32_t*)&info.p_value[0];
-
-			info.p_domain[info.l_domain] = 0;
-
-			//std::cout << "extract_ipaddr p_domain:" << (char*)info.p_domain << std::endl;
-
-			char str[0xff] = { 0 };
-			inet_ntop(AF_INET, &address, str, INET_ADDRSTRLEN);
-
-			//std::cout << "extract_ipaddr " << str << std::endl;
-
-			return address;
+		if (!strstr((const char*)info.p_domain, domain)) {
+			//std::cout << "p_domain " << (char*)info.p_domain << std::endl;
+			//std::cout << "domain " << domain << std::endl;
+			//exit(0);
+			return 0;
 		}
 
-		return 0;
+		uint32_t address = *(uint32_t*)&info.p_value[0];
+
+		info.p_domain[info.l_domain] = 0;
+
+		//std::cout << "extract_ipaddr p_domain:" << (char*)info.p_domain << std::endl;
+
+		char str[0xff] = { 0 };
+		inet_ntop(AF_INET, &address, str, INET_ADDRSTRLEN);
+
+		//std::cout << "extract_ipaddr " << str << std::endl;
+
+		return address;
 	}
 
-	/*
-	 * This will convert www.google.com to 3www6google3com
-	 * got it :)
-	 * */
-	void ChangetoDnsNameFormat(unsigned char* dns, unsigned char* host)
-	{
-		int lock = 0, i;
-		strcat((char*)host, ".");
+	return 0;
+}
 
-		for (i = 0; i < strlen((char*)host); i++)
+/*
+ * This will convert www.google.com to 3www6google3com
+ * got it :)
+ * */
+void ChangetoDnsNameFormat(unsigned char* dns, unsigned char* host)
+{
+	int lock = 0, i;
+	strcat((char*)host, ".");
+
+	for (i = 0; i < strlen((char*)host); i++)
+	{
+		if (host[i] == '.')
 		{
-			if (host[i] == '.')
+			*dns++ = i - lock;
+			for (; lock < i; lock++)
 			{
-				*dns++ = i - lock;
-				for (; lock < i; lock++)
-				{
-					*dns++ = host[lock];
-				}
-				lock++; //or lock=i+1;
+				*dns++ = host[lock];
 			}
+			lock++; //or lock=i+1;
 		}
-		*dns++ = '\0';
 	}
+	*dns++ = '\0';
+}
 
 }
 
@@ -1391,8 +1397,8 @@ namespace domains_cache {
 	FILE* _fd_hosts = 0;
 
 	inline void load_cache_entry(char* p_text) {
-		// "|mainpart.com|127.0.0.1" 
-		// "mail.|mainpart.com|127.0.0.2"
+	// "|mainpart.com|127.0.0.1"
+	// "mail.|mainpart.com|127.0.0.2"
 
 		char* p_mainpart = strchr(p_text, '|');
 		if (!p_mainpart) return;
@@ -1416,11 +1422,11 @@ namespace domains_cache {
 			inet_pton(AF_INET, p_ipaddr, &sin_addr);
 		}
 
-		/*std::cout << "Loaded cache entry:" << std::endl;
-		std::cout << "Key: " << p_mainpart << std::endl;
-		std::cout << "Domain: " << p_fulldomain << std::endl;
-		std::cout << "IP: " << p_ipaddr << " " << sin_addr << std::endl;
-*/
+	/*std::cout << "Loaded cache entry:" << std::endl;
+	std::cout << "Key: " << p_mainpart << std::endl;
+	std::cout << "Domain: " << p_fulldomain << std::endl;
+	std::cout << "IP: " << p_ipaddr << " " << sin_addr << std::endl;
+	*/
 
 		_hosts_cache.insert(std::make_pair(p_mainpart, cache_entry_t{ p_fulldomain, sin_addr }));
 	}
@@ -1432,7 +1438,7 @@ namespace domains_cache {
 		pthread_mutex_init(&_write_mutex, 0);
 		_fd_hosts = fopen(globs.hosts_cache_filename, "a");
 
-		//std::cout << "Loading DNS cache..." << std::endl;
+	//std::cout << "Loading DNS cache..." << std::endl;
 
 		std::vector<char*> entries;
 
@@ -1455,7 +1461,7 @@ namespace domains_cache {
 
 		int success = 0;
 
-		//std::cout << "Resolving from cache...   " << hosts.size() << std::endl;
+	//std::cout << "Resolving from cache...   " << hosts.size() << std::endl;
 
 		for (int i = 0; i < hosts.size(); i++) {
 
@@ -1475,7 +1481,7 @@ namespace domains_cache {
 
 		}
 
-		//std::cout << "Domains resolved from cache: " << success << std::endl;
+	//std::cout << "Domains resolved from cache: " << success << std::endl;
 
 		globs.domains_from_cache_counter += success;
 
@@ -1593,7 +1599,7 @@ class dns_super_resolver : public task_manager {
 public:
 
 	dns_super_resolver(std::vector<char*>& hosts, std::vector<sockaddr_in>& hosts_addr) :
-		_hosts(hosts), _hosts_addr(hosts_addr)
+	_hosts(hosts), _hosts_addr(hosts_addr)
 	{
 		_next_index = 0;
 		_pending_tasks_count = _hosts.size();
@@ -1758,7 +1764,7 @@ private:
 public:
 
 	workers_container(task_manager& m, int capacity, worker_container_events* e) :
-		_manager(m), _events(e) {
+	_manager(m), _events(e) {
 
 		_buffer.resize(capacity);
 		_number_of_items = 0;
@@ -1905,7 +1911,7 @@ class async_worker_thread : public worker_container_events {
 				}
 
 			}
-			});
+		});
 	}
 
 	void* worker_thread_proc()
@@ -1957,22 +1963,22 @@ class async_worker_thread : public worker_container_events {
 				current_time - time_of_last_startup_add > _params.seconds_before_next_portion) {
 
 				time_of_last_startup_add = get_current_time();
-				_current_tasks.add_tasks_up_to_max(_params.startup_portion_size);
+			_current_tasks.add_tasks_up_to_max(_params.startup_portion_size);
 
-			}
 		}
-
-
-		std::cout << "Worker thread finished." << std::endl;
-		return nullptr;
 	}
+
+
+	std::cout << "Worker thread finished." << std::endl;
+	return nullptr;
+}
 
 public:
 
 	async_worker_thread(task_manager& m, const scheduler_params params) :
-		_manager(m),
-		_params(params),
-		_current_tasks(m, params.max_running_tasks, this)
+	_manager(m),
+	_params(params),
+	_current_tasks(m, params.max_running_tasks, this)
 	{
 		_thread = 0;
 
@@ -2184,7 +2190,8 @@ private:
 	{
 		while (*str == *sub)
 		{
-			str++; sub++;
+			str++;
+			sub++;
 		}
 		return *sub == 0;
 	}
@@ -2267,9 +2274,9 @@ private:
 
 				try_next_password(/*no_tld_up, no_tld, user, User, USER, domain*/);
 
-				}); // receive ehlo response
+			}); // receive ehlo response
 
-			}); // Receive banner;
+		}); // Receive banner;
 	}
 
 	void try_next_password(/*std::string no_tld_up, std::string no_tld, std::string user, std::string User, std::string USER, std::string domain*/)
@@ -2314,7 +2321,7 @@ private:
 		}
 		else if (status == status_t::auth_error) {
 			// Some error in communication, no reason to continue.
-			// smtp_soft_quit(); - no reason to do soft quit 
+			// smtp_soft_quit(); - no reason to do soft quit
 		}
 	}
 
@@ -2374,13 +2381,13 @@ private:
 							smtp_soft_quit();
 						}
 
-						});
-
 					});
 
-				}); // send_recv auth
+				});
 
-			}); // send_recv rset
+			}); // send_recv auth
+
+		}); // send_recv rset
 	}
 
 	void smtp_soft_quit()
@@ -2390,7 +2397,7 @@ private:
 
 		send_recv_async(quit, strlen(quit), buf, sizeof(buf), [](int) {
 
-			});
+		});
 
 		// In fact we have no reason to exit with this command...
 		// After fail login attempt many smtp server will close
@@ -2491,7 +2498,7 @@ private:
 public:
 
 	smtp_brute_task(params_t params)
-		:socket_task_t(params.hostaddr, params.localaddr), _params(params) {
+	:socket_task_t(params.hostaddr, params.localaddr), _params(params) {
 
 	}
 
@@ -2817,7 +2824,7 @@ void init_smtp_bruteforcer() {
 
 
 /*
-	Base 64 Encoder based on the solution by René Nyffenegger:
+	Base 64 Encoder based on the solution by RenC) Nyffenegger:
 		http://www.adp-gmbh.ch/cpp/common/base64.html
 */
 
@@ -3233,53 +3240,53 @@ unsigned long pthreads_thread_id(void)
 	return (ret);
 }
 
-void CRYPTO_thread_setup(void)
-{
-	int i;
+// void CRYPTO_thread_setup(void)
+// {
+// 	int i;
 
-	lock_cs = (pthread_mutex_t *)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
-	lock_count = (long*)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(long));
-	if (!lock_cs || !lock_count) {
-		/* Nothing we can do about this...void function! */
-		if (lock_cs)
-			OPENSSL_free(lock_cs);
-		if (lock_count)
-			OPENSSL_free(lock_count);
-		return;
-	}
-	for (i = 0; i < CRYPTO_num_locks(); i++) {
-		lock_count[i] = 0;
-		pthread_mutex_init(&(lock_cs[i]), NULL);
-	}
+// 	lock_cs = (pthread_mutex_t *)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
+// 	lock_count = (long*)OPENSSL_malloc(CRYPTO_num_locks() * sizeof(long));
+// 	if (!lock_cs || !lock_count) {
+// 		/* Nothing we can do about this...void function! */
+// 		if (lock_cs)
+// 			OPENSSL_free(lock_cs);
+// 		if (lock_count)
+// 			OPENSSL_free(lock_count);
+// 		return;
+// 	}
+// 	for (i = 0; i < CRYPTO_num_locks(); i++) {
+// 		lock_count[i] = 0;
+// 		pthread_mutex_init(&(lock_cs[i]), NULL);
+// 	}
 
-	CRYPTO_set_id_callback((unsigned long(*)())pthreads_thread_id);
-	CRYPTO_set_locking_callback((void(*)(int, int, const char*, int))pthreads_locking_callback);
-}
+// 	CRYPTO_set_id_callback((unsigned long(*)())pthreads_thread_id);
+// 	CRYPTO_set_locking_callback((void(*)(int, int, const char*, int))pthreads_locking_callback);
+// }
 
-void thread_cleanup(void)
-{
-	int i;
+// void thread_cleanup(void)
+// {
+// 	int i;
 
-	CRYPTO_set_locking_callback(NULL);
-	for (i = 0; i < CRYPTO_num_locks(); i++) {
-		pthread_mutex_destroy(&(lock_cs[i]));
-	}
-	OPENSSL_free(lock_cs);
-	OPENSSL_free(lock_count);
-}
+// 	CRYPTO_set_locking_callback(NULL);
+// 	for (i = 0; i < CRYPTO_num_locks(); i++) {
+// 		pthread_mutex_destroy(&(lock_cs[i]));
+// 	}
+// 	OPENSSL_free(lock_cs);
+// 	OPENSSL_free(lock_count);
+// }
 
 
-void init_OpenSSL() {
-	OpenSSL_add_all_algorithms();
-	SSL_load_error_strings();
-	ERR_load_BIO_strings();
-	ERR_load_crypto_strings();
-	SSL_library_init();
+// void init_OpenSSL() {
+// 	OpenSSL_add_all_algorithms();
+// 	SSL_load_error_strings();
+// 	ERR_load_BIO_strings();
+// 	ERR_load_crypto_strings();
+// 	SSL_library_init();
 
-	CRYPTO_thread_setup();
+// 	CRYPTO_thread_setup();
 
-	std::cout << "OpenSSL version: " << SSLeay_version(SSLEAY_VERSION) << std::endl;
-}
+// 	std::cout << "OpenSSL version: " << SSLeay_version(SSLEAY_VERSION) << std::endl;
+// }
 
 
 globs_t globs;
@@ -3541,7 +3548,9 @@ public:
 
 	bruteforcer_wrapper(brute_inputs& targets) :_targets(targets) {}
 
-	bool is_running() { return _is_burte_running; }
+	bool is_running() {
+		return _is_burte_running;
+	}
 
 	void start() {
 
@@ -3582,31 +3591,31 @@ void bruteforce_smtp_domains(brute_inputs& targets) {
 				!allhosts.empty()
 				) {
 				timestamp = 0;
-				continue;
-			}
-
-			timestamp = get_current_time();
+			continue;
 		}
 
-		if ((hosts.size() >= brute_block_size || allhosts.empty()) && !bruteforcer.is_running()) {
-
-			timeout_before_next_resovle = 30;
-
-			_awaiting_domains_counter = 0;
-
-			targets.hosts = std::move(hosts);
-			targets.hosts_addr = std::move(hosts_addr);
-
-			std::cout << "start..." << std::endl;
-
-			bruteforcer.start();
-
-		}
-
-		usleep(1000000);
+		timestamp = get_current_time();
 	}
 
-	bruteforcer.wait();
+	if ((hosts.size() >= brute_block_size || allhosts.empty()) && !bruteforcer.is_running()) {
+
+		timeout_before_next_resovle = 30;
+
+		_awaiting_domains_counter = 0;
+
+		targets.hosts = std::move(hosts);
+		targets.hosts_addr = std::move(hosts_addr);
+
+		std::cout << "start..." << std::endl;
+
+		bruteforcer.start();
+
+	}
+
+	usleep(1000000);
+}
+
+bruteforcer.wait();
 }
 
 void resolve_smtp_domains(brute_inputs& targets) {
